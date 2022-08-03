@@ -1,0 +1,232 @@
+<html>
+  <head>
+    <script src="lib/jquery-1.4.2.js"></script>
+    <script src="dist/dygraph.js"></script>
+    <script src="data.js"></script>
+    <link rel="stylesheet" href="dist/dygraph.css">
+    <script type="text/javascript">
+      $(document).ready(function() {
+var getData = function(numSeries, numRows, isStacked) {
+  var data = [];
+
+  for (var j = 0; j < numRows; ++j) {
+    data[j] = [j];
+  }
+  for (var i = 0; i < numSeries; ++i) {
+    var val = 0;
+    for (var j = 0; j < numRows; ++j) {
+      if (isStacked) {
+        val = Math.random();
+      } else {
+        val += Math.random() - 0.5;
+      }
+      data[j][i + 1] = val;
+    }
+  }
+  return data;
+};
+
+var makeGraph = function(className, numSeries, numRows, isStacked) {
+  var demo = document.getElementById('demo');
+  var div = document.createElement('div');
+  div.className = className;
+  div.style.display = 'inline-block';
+  div.style.margin = '4px';
+  demo.appendChild(div);
+
+  var labels = ['x'];
+  for (var i = 0; i < numSeries; ++i) {
+    var label = '' + i;
+    label = 's' + '000'.substr(label.length) + label;
+    labels[i + 1] = label;
+  }
+  var g = new Dygraph(
+      div,
+      getData(numSeries, numRows, isStacked),
+      {
+        width: 480,
+        height: 320,
+        labels: labels.slice(),
+        stackedGraph: isStacked,
+        xlabel:'Layers',
+        highlightCircleSize: 2,
+        strokeWidth: 1,
+        strokeBorderWidth: isStacked ? null : 1,
+
+        highlightSeriesOpts: {
+          strokeWidth: 3,
+          strokeBorderWidth: 1,
+          highlightCircleSize: 5
+        }
+      });
+  var onclick = function(ev) {
+    if (g.isSeriesLocked()) {
+      g.clearSelection();
+    } else {
+      g.setSelection(g.getSelection(), g.getHighlightSeries(), true);
+    }
+  };
+  g.updateOptions({clickCallback: onclick}, true);
+  g.setSelection(false, 's005');
+  //console.log(g);
+};
+
+makeGraph("few", 20, 50, false);
+makeGraph("few", 10, 20, true);
+          /* makeGraph("many", 75, 50, false);
+           * makeGraph("many", 40, 50, true); */
+    }
+);
+    </script>
+    <script type="text/javascript">
+     $(document).ready(function() {
+         // A basic sinusoidal data series.
+         var data = [];
+         for (var i = 0; i < 1000; i++) {
+             var base = 10 * Math.sin(i / 90.0);
+             data.push([i, base, base + Math.sin(i / 2.0)]);
+         }
+
+         // Shift one portion out of line.
+         var highlight_start = 450;
+         var highlight_end = 500;
+         for (var i = highlight_start; i <= highlight_end; i++) {
+             data[i][2] += 5.0;
+         }
+
+         new Dygraph(
+             document.getElementById("div_g"),
+             data,
+             {
+                 labels: ['X', 'Est.', 'Actual'],
+                 ylabel: 'Degradation',
+                 xlabel: 'Layers',
+                 animatedZooms: true,
+                 underlayCallback: function(canvas, area, g) {
+                     var bottom_left = g.toDomCoords(highlight_start, -20);
+                     var top_right = g.toDomCoords(highlight_end, +20);
+
+                     var left = bottom_left[0];
+                     var right = top_right[0];
+
+                     canvas.fillStyle = "rgba(255, 255, 102, 1.0)";
+                     canvas.fillRect(left, area.y, right - left, area.h);
+                 }
+
+             }
+         );
+     }
+     );
+    </script>
+    <script type="text/javascript">
+     $(document).ready(function() {
+         // Some sample data
+         var data = "01," + Math.random()*100 + "\n" +
+                    "02," + Math.random()*100 + "\n" +
+                    "03," + Math.random()*100 + "\n" +
+                    "04," + Math.random()*100 + "\n" +
+                    "05," + Math.random()*100 + "\n" +
+                    "06," + Math.random()*100 + "\n" +
+                    "07," + Math.random()*100 + "\n" +
+                    "08," + Math.random()*100 + "\n" +
+                    "09," + Math.random()*100 + "\n" +
+                    "10," + Math.random()*100 + "\n" +
+                    "11," + Math.random()*100 + "\n" +
+                    "12," + Math.random()*100 + "\n" +
+                    "13," + Math.random()*100 + "\n" +
+                    "14," + Math.random()*100 + "\n" +
+                    "15," + Math.random()*100 + "\n" +
+                    "16," + Math.random()*100 + "\n" +
+                    "17," + Math.random()*100 + "\n" +
+                    "18," + Math.random()*100 + "\n" +
+                    "19," + Math.random()*100 + "\n" +
+                    "20," + Math.random()*100 + "\n" +
+                    "21," + Math.random()*100 + "\n" +
+                    "22," + Math.random()*100 + "\n" +
+                    "23," + Math.random()*100 + "\n" +
+                    "24," + Math.random()*100 + "\n" +
+                    "25," + Math.random()*100 + "\n" +
+                    "26," + Math.random()*100 + "\n" +
+                    "27," + Math.random()*100 + "\n" +
+                    "28," + Math.random()*100 + "\n" +
+                    "29," + Math.random()*100 + "\n" +
+                    "30," + Math.random()*100 + "\n" +
+                    "31," + Math.random()*100 + "\n";
+
+         new Dygraph(
+             document.getElementById("div_multiple"),
+             data,
+             {
+                 labels: ['Date','Value'],
+                 underlayCallback: function(canvas, area, g) {
+
+                     canvas.fillStyle = "rgba(255, 255, 102, 1.0)";
+
+                     function highlight_period(x_start, x_end) {
+                         var canvas_left_x = g.toDomXCoord(x_start);
+                         var canvas_right_x = g.toDomXCoord(x_end);
+                         var canvas_width = canvas_right_x - canvas_left_x;
+                         canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
+                     }
+
+                     var min_data_x = g.getValue(0,0);
+                     var max_data_x = g.getValue(g.numRows()-1,0);
+                     var i = 1
+                     while (i < max_data_x) {
+                         var yval = g.getValue(i-1,1);
+                         if(yval > 85){
+                         var start_x_highlight = i-1;
+                         var end_x_highlight = i+1;
+                         // make sure we don't try to plot outside the graph
+                         if (start_x_highlight < min_data_x) {
+                             start_x_highlight = min_data_x;
+                         }
+                         if (end_x_highlight > max_data_x) {
+                             end_x_highlight = max_data_x;
+                         }
+                             highlight_period(start_x_highlight,end_x_highlight);
+                         }
+                         i += 1
+                         // calculate start of highlight for next Saturday 
+                     }
+                 }
+         });
+     }
+     );
+    </script>
+    <script type="text/javascript">
+     $(document).ready(function() {
+         new Dygraph(
+             document.getElementById("darkbg"),
+             replace_date(data_temp),
+             {
+                 rollPeriod: 14,
+                 showRoller: true,
+                 customBars: true,
+                 title: 'Resnet-1072 Pytorch vs. Tensorflow',
+                 ylabel: 'Avg Squared Channel Mean',
+                 xlabel: 'Layers',
+                 legend: 'always',
+                 showRangeSelector: true,
+                 rangeSelectorPlotFillColor: 'MediumSlateBlue',
+                 rangeSelectorPlotFillGradientColor: 'rgba(123, 104, 238, 0)',
+                 colorValue: 0.9,
+                 fillAlpha: 0.4
+             }
+         );
+     }
+     );
+    </script>
+  </head>
+  <body>
+      
+      <h3>Highlight Closest Layer</h3>      
+      <div id="demo"></div>
+      <h3>Highlight Region</h3>
+      <div id="div_g"></div>
+      <h3>Highlight Multiple</h3>
+      <div id="div_multiple"></div>
+      <h3>Range Selection</h3>
+      <div id="darkbg"></div>
+  </body>
+</html>
